@@ -45,12 +45,10 @@ def to_index(ordinal, shape, out_index):
 
     """
     # TODO: Implement for Task 2.1.
-    # ordinal = 8
-    for i, stride in enumerate(strides_from_shape(shape)):
-        index = int(ordinal / stride)
-        ordinal -= index * stride
-        out_index[i] = index
-    # breakpoint()
+    ordinal = ordinal + 0
+    for i in range(len(shape) - 1, -1, -1):
+        out_index[i] = ordinal % shape[i]
+        ordinal //= shape[i]
 
 
 def broadcast_index(big_index, big_shape, shape, out_index):

@@ -11,6 +11,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "project/parallel_check.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/project/parallel_check.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

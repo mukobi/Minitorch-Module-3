@@ -16,15 +16,6 @@ def mul(x, y):
     return x * y
 
 
-def div(x, y):
-    ":math:`f(x, y) = x / y`"
-    # GABE_MODIFICATION
-    # if y == 0:
-    #     # return math.inf
-    #     return 1e10
-    return x / y
-
-
 def id(x):
     ":math:`f(x) = x`"
     # TODO: Implement for Task 0.1.
@@ -40,7 +31,7 @@ def add(x, y):
 def neg(x):
     ":math:`f(x) = -x`"
     # TODO: Implement for Task 0.1.
-    return mul(-1, x)
+    return -x
 
 
 def lt(x, y):
@@ -58,7 +49,7 @@ def eq(x, y):
 def max(x, y):
     ":math:`f(x) =` x if x is greater than y else y"
     # TODO: Implement for Task 0.1.
-    return x if lt(y, x) else y
+    return x if x > y else y
 
 
 def is_close(x, y):
@@ -67,7 +58,7 @@ def is_close(x, y):
     if x == y:
         # Handle x = y = +-inf
         return True
-    return lt(abs(x - y), 1e-2)
+    return abs(x - y) < 1e-2
 
 
 def sigmoid(x):
@@ -89,7 +80,7 @@ def sigmoid(x):
         float : sigmoid value
     """
     # TODO: Implement for Task 0.1.
-    return div(1.0, (1.0 + math.exp(neg(x))))
+    return 1.0 / (1.0 + math.exp(-x))
 
 
 def relu(x):
@@ -105,7 +96,7 @@ def relu(x):
         float : relu value
     """
     # TODO: Implement for Task 0.1.
-    return max(x, 0.0)
+    return x if x > 0.0 else 0.0
 
 
 EPS = 1e-6
@@ -124,25 +115,25 @@ def exp(x):
 def log_back(x, d):
     r"If :math:`f = log` as above, compute d :math:`d \times f'(x)`"
     # TODO: Implement for Task 0.1.
-    return div(d, x)
+    return d / x
 
 
 def inv(x):
     ":math:`f(x) = 1/x`"
     # TODO: Implement for Task 0.1.
-    return div(1.0, x)
+    return 1.0 / x
 
 
 def inv_back(x, d):
     r"If :math:`f(x) = 1/x` compute d :math:`d \times f'(x)`"
     # TODO: Implement for Task 0.1.
-    return div(neg(d), mul(x, x))
+    return -d / (x * x)
 
 
 def relu_back(x, d):
     r"If :math:`f = relu` compute d :math:`d \times f'(x)`"
     # TODO: Implement for Task 0.1.
-    return d if lt(0.0, x) else 0.0
+    return d if x > 0.0 else 0.0
 
 
 # ## Task 0.3

@@ -8,7 +8,6 @@ from .tensor_data import (
 )
 from numba import njit, prange
 
-
 # TIP: Use `NUMBA_DISABLE_JIT=1 pytest tests/ -m task3_1` to run these tests without JIT.
 
 # This code will JIT compile fast versions your tensor_data functions.
@@ -31,7 +30,7 @@ def tensor_map(fn):
 
     Args:
         fn: function mappings floats-to-floats to apply.
-        out (array): storage for out tensor.
+        out_storage (array): storage for out tensor.
         out_shape (array): shape for out tensor.
         out_strides (array): strides for out tensor.
         in_storage (array): storage for in tensor.
@@ -42,9 +41,40 @@ def tensor_map(fn):
         None : Fills in `out`
     """
 
-    def _map(out, out_shape, out_strides, in_storage, in_shape, in_strides):
+    # fn = njit()(fn)  # Already jitted
+
+    def _map(out_storage, out_shape, out_strides, in_storage, in_shape, in_strides):
         # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+
+        # When out and in are stride-aligned, avoid indexing
+        if out_strides == in_strides:
+            for ordinal in prange(len(out_storage)):
+                out_storage[ordinal] = fn(in_storage[ordinal])
+            return
+
+        # Otherwise, use broadcasting
+        # size = np.prod(out_shape)  # get the size of the out array
+        # in_index = np.zeros((size, MAX_DIMS), np.int32)
+        # out_index = np.zeros((size, MAX_DIMS), np.int32)
+        # for i in prange(size):
+        #     to_index(i, out_shape, out_index[i])
+        #     broadcast_index(out_index[i], out_shape, in_shape, in_index[i])
+        #     k = index_to_position(in_index[i], in_strides)
+        #     j = index_to_position(out_index[i], out_strides)
+        #     out[j] = fn(in_storage[k])
+            
+        for out_ordinal in prange(len(out_storage)):
+            # Get the index of a particular output
+            out_index = out_shape.copy()
+            to_index(out_ordinal, out_shape, out_index)
+
+            # Broadcast that index to the index in the input
+            in_index = in_shape.copy()
+            broadcast_index(out_index, out_shape, in_shape, in_index)
+
+            # Apply the function to the input at that space and store it in the output
+            in_ordinal = index_to_position(in_index, in_strides)
+            out_storage[out_ordinal] = fn(in_storage[in_ordinal])
 
     return njit(parallel=True)(_map)
 
@@ -92,7 +122,7 @@ def tensor_zip(fn):
 
     Args:
         fn: function maps two floats to float to apply.
-        out (array): storage for `out` tensor.
+        out_storage (array): storage for `out` tensor.
         out_shape (array): shape for `out` tensor.
         out_strides (array): strides for `out` tensor.
         a_storage (array): storage for `a` tensor.
@@ -107,7 +137,7 @@ def tensor_zip(fn):
     """
 
     def _zip(
-        out,
+        out_storage,
         out_shape,
         out_strides,
         a_storage,
@@ -118,7 +148,21 @@ def tensor_zip(fn):
         b_strides,
     ):
         # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+        for out_ordinal in prange(len(out_storage)):
+            # Get the index of a particular output
+            out_index = [0] * len(out_shape)
+            to_index(out_ordinal, out_shape, out_index)
+
+            # Broadcast that index to the index in each input
+            a_index = [0] * len(a_shape)
+            b_index = [0] * len(b_shape)
+            broadcast_index(out_index, out_shape, a_shape, a_index)
+            broadcast_index(out_index, out_shape, b_shape, b_index)
+
+            # Apply the function to the inputs at that space and store it in the output
+            a_ordinal = index_to_position(a_index, a_strides)
+            b_ordinal = index_to_position(b_index, b_strides)
+            out_storage[out_ordinal] = fn(a_storage[a_ordinal], b_storage[b_ordinal])
 
     return njit(parallel=True)(_zip)
 
