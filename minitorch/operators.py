@@ -12,42 +12,62 @@ import math
 
 def mul(x, y):
     ":math:`f(x, y) = x * y`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return x * y
+
+
+def div(x, y):
+    ":math:`f(x, y) = x / y`"
+    # GABE_MODIFICATION
+    # if y == 0:
+    #     # return math.inf
+    #     return 1e10
+    return x / y
 
 
 def id(x):
     ":math:`f(x) = x`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return x
 
 
 def add(x, y):
     ":math:`f(x, y) = x + y`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return x + y
 
 
 def neg(x):
     ":math:`f(x) = -x`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return mul(-1, x)
 
 
 def lt(x, y):
     ":math:`f(x) =` 1.0 if x is less than y else 0.0"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return 1.0 if x < y else 0.0
 
 
 def eq(x, y):
     ":math:`f(x) =` 1.0 if x is equal to y else 0.0"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return float(x == y)
 
 
 def max(x, y):
     ":math:`f(x) =` x if x is greater than y else y"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return x if lt(y, x) else y
 
 
 def is_close(x, y):
-    ":math:`f(x) = |x - y| < 1e-2` "
-    raise NotImplementedError('Need to include this file from past assignment.')
+    ":math:`f(x) = |x - y| < 1e-2`"
+    # TODO: Implement for Task 0.1.
+    if x == y:
+        # Handle x = y = +-inf
+        return True
+    return lt(abs(x - y), 1e-2)
 
 
 def sigmoid(x):
@@ -68,7 +88,8 @@ def sigmoid(x):
     Returns:
         float : sigmoid value
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return div(1.0, (1.0 + math.exp(neg(x))))
 
 
 def relu(x):
@@ -83,7 +104,8 @@ def relu(x):
     Returns:
         float : relu value
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return max(x, 0.0)
 
 
 EPS = 1e-6
@@ -100,23 +122,27 @@ def exp(x):
 
 
 def log_back(x, d):
-    r"If :math:`f = log` as above, compute :math:`d \times f'(x)`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    r"If :math:`f = log` as above, compute d :math:`d \times f'(x)`"
+    # TODO: Implement for Task 0.1.
+    return div(d, x)
 
 
 def inv(x):
     ":math:`f(x) = 1/x`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.1.
+    return div(1.0, x)
 
 
 def inv_back(x, d):
-    r"If :math:`f(x) = 1/x` compute :math:`d \times f'(x)`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    r"If :math:`f(x) = 1/x` compute d :math:`d \times f'(x)`"
+    # TODO: Implement for Task 0.1.
+    return div(neg(d), mul(x, x))
 
 
 def relu_back(x, d):
-    r"If :math:`f = relu` compute :math:`d \times f'(x)`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    r"If :math:`f = relu` compute d :math:`d \times f'(x)`"
+    # TODO: Implement for Task 0.1.
+    return d if lt(0.0, x) else 0.0
 
 
 # ## Task 0.3
@@ -140,12 +166,23 @@ def map(fn):
         function : A function that takes a list, applies `fn` to each element, and returns a
         new list
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    # return lambda list: [fn(element) for element in list]
+
+    def new_function(list):
+        output = []
+        for elem in list:
+            output.append(fn(elem))
+        return output
+        
+    return new_function
 
 
 def negList(ls):
     "Use :func:`map` and :func:`neg` to negate each element in `ls`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    neg_function = map(neg)
+    return neg_function(ls)
 
 
 def zipWith(fn):
@@ -164,12 +201,16 @@ def zipWith(fn):
         applying fn(x, y) on each pair of elements.
 
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    return lambda list1, list2: [
+        fn(element1, element2) for element1, element2 in zip(list1, list2)
+    ]
 
 
 def addLists(ls1, ls2):
     "Add the elements of `ls1` and `ls2` using :func:`zipWith` and :func:`add`"
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    return zipWith(add)(ls1, ls2)
 
 
 def reduce(fn, start):
@@ -188,14 +229,23 @@ def reduce(fn, start):
         :math:`x_1 \ldots x_n` and computes the reduction :math:`fn(x_3, fn(x_2,
         fn(x_1, x_0)))`
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    def reducer(list):
+        output = start
+        for element in list:
+            output = fn(element, output)
+        return output
+
+    return reducer
 
 
 def sum(ls):
     "Sum up a list using :func:`reduce` and :func:`add`."
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    return reduce(add, 0)(ls)
 
 
 def prod(ls):
     "Product of a list using :func:`reduce` and :func:`mul`."
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 0.3.
+    return reduce(mul, 1)(ls)

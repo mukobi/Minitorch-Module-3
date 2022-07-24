@@ -24,7 +24,8 @@ def index_to_position(index, strides):
         int : position in storage
     """
 
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 2.1.
+    return sum([i * stride for i, stride in zip(index, strides)])
 
 
 def to_index(ordinal, shape, out_index):
@@ -43,7 +44,13 @@ def to_index(ordinal, shape, out_index):
       None : Fills in `out_index`.
 
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 2.1.
+    # ordinal = 8
+    for i, stride in enumerate(strides_from_shape(shape)):
+        index = int(ordinal / stride)
+        ordinal -= index * stride
+        out_index[i] = index
+    # breakpoint()
 
 
 def broadcast_index(big_index, big_shape, shape, out_index):
@@ -63,7 +70,17 @@ def broadcast_index(big_index, big_shape, shape, out_index):
     Returns:
         None : Fills in `out_index`.
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 2.2.
+    num_to_skip = len(big_shape) - len(shape)
+    assert num_to_skip >= 0  # big_shape must be equal or higher dim
+    for i in range(len(shape)):
+        small_dim = shape[i]
+        big_i = big_index[i + num_to_skip]
+        if small_dim == 1:
+            out_index[i] = 0
+        else:
+            assert small_dim == big_shape[i + num_to_skip]
+            out_index[i] = big_i
 
 
 def shape_broadcast(shape1, shape2):
@@ -80,7 +97,22 @@ def shape_broadcast(shape1, shape2):
     Raises:
         IndexingError : if cannot broadcast
     """
-    raise NotImplementedError('Need to include this file from past assignment.')
+    # TODO: Implement for Task 2.2.
+    output = []
+    if len(shape1) < len(shape2):
+        shape1 = tuple([1] * (len(shape2) - len(shape1))) + shape1
+    if len(shape2) < len(shape1):
+        shape2 = tuple([1] * (len(shape1) - len(shape2))) + shape2
+    for dim1, dim2 in zip(shape1, shape2):
+        if dim1 == dim2:
+            output.append(dim1)
+        elif dim1 == 1:
+            output.append(dim2)
+        elif dim2 == 1:
+            output.append(dim1)
+        else:
+            raise IndexingError()
+    return tuple(output)
 
 
 def strides_from_shape(shape):
@@ -187,7 +219,13 @@ class TensorData:
             range(len(self.shape))
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
-        raise NotImplementedError('Need to include this file from past assignment.')
+        # TODO: Implement for Task 2.1.
+        new_shape = []
+        new_strides = []
+        for dimension in order:
+            new_shape.append(self.shape[dimension])
+            new_strides.append(self.strides[dimension])
+        return TensorData(self._storage, tuple(new_shape), tuple(new_strides))
 
     def to_string(self):
         s = ""
