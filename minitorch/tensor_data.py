@@ -25,7 +25,7 @@ def index_to_position(index, strides):
     """
 
     # TODO: Implement for Task 2.1.
-    return sum([i * stride for i, stride in zip(index, strides)])
+    return int(sum([i * stride for i, stride in zip(index, strides)]))
 
 
 def to_index(ordinal, shape, out_index):

@@ -205,7 +205,7 @@ def tensor_reduce(fn):
 
     Args:
         fn: reduction function mapping two floats to float.
-        out (array): storage for `out` tensor.
+        out_storage (array): storage for `out` tensor.
         out_shape (array): shape for `out` tensor.
         out_strides (array): strides for `out` tensor.
         a_storage (array): storage for `a` tensor.
@@ -218,9 +218,22 @@ def tensor_reduce(fn):
 
     """
 
-    def _reduce(out, out_shape, out_strides, a_storage, a_shape, a_strides, reduce_dim):
+    def _reduce(out_storage, out_shape, out_strides, a_storage, a_shape, a_strides, reduce_dim):
         # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+        for out_ordinal in prange(len(out_storage)):
+            # Get the index of a particular output
+            in_index = np.empty(len(out_shape))
+            to_index(out_ordinal, out_shape, in_index)
+
+            # For each value along the reduce_dim
+            temp = out_storage[out_ordinal]
+            for i in range(a_shape[reduce_dim]):
+                in_index[reduce_dim] = i
+
+                # Apply the function to the input at that space and store it in the output
+                in_ordinal = index_to_position(in_index, a_strides)
+                temp = fn(temp, a_storage[in_ordinal])
+            out_storage[out_ordinal] = temp
 
     return njit(parallel=True)(_reduce)
 
