@@ -47,21 +47,12 @@ def tensor_map(fn):
         # TODO: Implement for Task 3.1.
 
         # When out and in are stride-aligned, avoid indexing
-        if out_strides == in_strides:
+        if (len(out_shape) == len(in_shape)
+            and (out_shape == in_shape).all()
+            and (out_strides == in_strides).all()):
             for ordinal in prange(len(out_storage)):
                 out_storage[ordinal] = fn(in_storage[ordinal])
             return
-
-        # Otherwise, use broadcasting
-        # size = np.prod(out_shape)  # get the size of the out array
-        # in_index = np.zeros((size, MAX_DIMS), np.int32)
-        # out_index = np.zeros((size, MAX_DIMS), np.int32)
-        # for i in prange(size):
-        #     to_index(i, out_shape, out_index[i])
-        #     broadcast_index(out_index[i], out_shape, in_shape, in_index[i])
-        #     k = index_to_position(in_index[i], in_strides)
-        #     j = index_to_position(out_index[i], out_strides)
-        #     out[j] = fn(in_storage[k])
             
         for out_ordinal in prange(len(out_storage)):
             # Get the index of a particular output
@@ -148,14 +139,23 @@ def tensor_zip(fn):
         b_strides,
     ):
         # TODO: Implement for Task 3.1.
+        # When `out`, `a`, `b` are stride-aligned, avoid indexing
+        if (len(out_shape) == len(a_shape) and len(out_shape) == len(b_shape)
+            and (out_shape == a_shape).all() and (out_shape == b_shape).all()
+            and (out_strides == a_strides).all() and (out_strides == b_strides).all()):
+            assert (out_shape == a_shape).all() and (out_shape == b_shape).all()
+            for ordinal in prange(len(out_storage)):
+                out_storage[ordinal] = fn(a_storage[ordinal], b_storage[ordinal])
+            return
+
         for out_ordinal in prange(len(out_storage)):
             # Get the index of a particular output
-            out_index = [0] * len(out_shape)
+            out_index = out_shape.copy()
             to_index(out_ordinal, out_shape, out_index)
 
             # Broadcast that index to the index in each input
-            a_index = [0] * len(a_shape)
-            b_index = [0] * len(b_shape)
+            a_index = a_shape.copy()
+            b_index = b_shape.copy()
             broadcast_index(out_index, out_shape, a_shape, a_index)
             broadcast_index(out_index, out_shape, b_shape, b_index)
 
