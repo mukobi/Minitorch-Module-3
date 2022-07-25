@@ -311,11 +311,25 @@ def tensor_matrix_multiply(
     Returns:
         None : Fills in `out`
     """
-    a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
-    b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
+    # a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
+    # b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
 
     # TODO: Implement for Task 3.2.
-    raise NotImplementedError('Need to implement for Task 3.2')
+    for out_ordinal in prange(len(out)):
+        out_index = out_shape.copy()
+        to_index(out_ordinal, out_shape, out_index)
+
+        a_index = out_index.copy()
+        b_index = out_index.copy()
+        broadcast_index(out_index, out_shape, a_shape, a_index)
+        broadcast_index(out_index, out_shape, b_shape, b_index)
+
+        temp = 0
+        for j in range(a_shape[-1]):
+            a_index[-1] = j
+            b_index[-2] = j
+            temp += a_storage[index_to_position(a_index, a_strides)] * b_storage[index_to_position(b_index, b_strides)]
+        out[out_ordinal] = temp
 
 
 def matrix_multiply(a, b):

@@ -70,15 +70,11 @@ def broadcast_index(big_index, big_shape, shape, out_index):
     """
     # TODO: Implement for Task 2.2.
     num_to_skip = len(big_shape) - len(shape)
-    assert num_to_skip >= 0  # big_shape must be equal or higher dim
     for i in range(len(shape)):
-        small_dim = shape[i]
-        big_i = big_index[i + num_to_skip]
-        if small_dim == 1:
-            out_index[i] = 0
+        if shape[i] > 1:
+            out_index[i] = big_index[i + num_to_skip]
         else:
-            assert small_dim == big_shape[i + num_to_skip]
-            out_index[i] = big_i
+            out_index[i] = 0
 
 
 def shape_broadcast(shape1, shape2):
